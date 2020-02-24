@@ -1,0 +1,63 @@
+--Week 5 Exercises
+
+--Question 1:
+SELECT name, creditlimit
+FROM customer
+HAVING creditlimit>=(SELECT AVG(creditlimit)
+                    FROM customer)
+ORDER BY creditlimit DESC;
+
+--question 2:
+SELECT ename, job, monthly_sal
+FROM emp
+WHERE monthly_sal = (SELECT MIN(monthly_sal)
+                     FROM emp)
+ ORDER BY ename;
+ 
+--Question 3:
+SELECT ename, job, monthly_sal
+FROM emp
+WHERE (job,Monthly_sal) IN (SELECT job,MIN(monthly_sal)
+                            FROM emp
+                            GROUP BY job)
+ORDER BY monthly_sal DESC;
+                     
+--Question 4:
+SELECT ename,deptno,monthly_sal
+FROM emp
+WHERE(deptno,monthly_sal) IN (SELECT deptno,MAX(monthly_sal)
+                           FROM emp
+                           GROUP BY deptno)
+ORDER BY deptno ASC, ename;
+
+--Question 5:
+SELECT deptno,ename,hiredate
+FROM emp 
+WHERE(deptno,hiredate) IN (SELECT deptno,MIN(hiredate)
+                           FROM emp
+                           GROUP BY deptno)
+ORDER BY hiredate ASC;
+
+--Question 6a:
+SELECT monthly_sal
+FROM emp
+ORDER BY monthly_sal DESC
+LIMIT 1 OFFSET 1;
+
+--Question 6b:
+SELECT ename,monthly_sal
+FROM emp
+WHERE monthly_sal = (SELECT monthly_sal
+                             FROM emp
+                             ORDER BY monthly_sal DESC
+                             LIMIT 1 OFFSET 1)
+ORDER BY ename;
+
+--Question 7:
+SELECT deptno,dname
+FROM dept
+WHERE deptno NOT IN (SELECT deptno
+                     FROM emp);
+                     
+--Question 8:
+SELECT 

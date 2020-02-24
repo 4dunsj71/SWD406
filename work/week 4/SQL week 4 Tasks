@@ -1,0 +1,125 @@
+--week 4 tasks
+
+--Question 1:
+SELECT MAX(monthly_sal)AS'Maximum salary',
+       MIN(monthly_sal)AS'Minimum Salary',
+       AVG(monthly_sal)AS'Average Salary',
+COUNT(*)AS'Number of Employees'
+FROM emp;
+
+--question 2:
+
+SELECT prodid,
+       SUM(qty)AS'quantity sold'
+FROM item
+WHERE prodid = 100870;
+
+--question 3:
+
+SELECT prodid,
+       SUM(qty)AS'Quantity Sold'
+FROM item
+GROUP BY prodid;
+
+--Question 4:
+
+SELECT ordid, PRINTF("£%.2f",(qty*actualprice))AS'Order Value'
+FROM item
+WHERE ordid<=605
+GROUP BY ordid;
+
+--Question 5:
+
+SELECT ordid, PRINTF("£%.2f",(qty*actualprice))AS'Order Value',
+        COUNT(*)AS'no, of Items',
+        AVG(qty)AS'Average Qty'
+FROM item
+WHERE ordid<=605
+GROUP BY ordid;
+
+--question 6:
+
+SELECT p.prodid, p.descrip,SUM(i.qty)AS'Quantity Sold'
+FROM product p
+             INNER JOIN item i ON p.prodid=i.prodid
+GROUP BY p.prodid;    
+
+--Question 7:
+
+SELECT p.prodid, p.descrip,SUM(i.qty)AS'Quantity Sold'
+FROM product p
+             INNER JOIN item i ON p.prodid=i.prodid
+             INNER JOIN ord o ON o.ordid = i.ordid
+             
+WHERE orderdate>'2005-02-15'
+GROUP BY p.prodid;    
+
+--Question 8:
+
+SELECT c.name,  COUNT(o.ordid) AS 'No of Orders',
+           PRINTF("£%.2f", SUM(i.qty * i.actualprice)) AS 'Order Value'
+FROM customer c 
+           INNER JOIN  ord o  ON c.custid = o.custid
+           INNER JOIN  item i ON o.ordid = i.ordid
+WHERE orderdate > '2005-02-01'
+GROUP BY c.name;
+
+--Question 9:
+
+SELECT c.name,  COUNT(o.ordid) AS 'No of Orders',
+           PRINTF("£%.2f", SUM(i.qty * i.actualprice)) AS 'Order Value'
+FROM customer c 
+           INNER JOIN  ord o  ON c.custid = o.custid
+           INNER JOIN  item i ON o.ordid = i.ordid
+WHERE orderdate > '2005-02-01'
+GROUP BY c.name
+HAVING COUNT(o.ordid)>=5;
+
+--Question 10:
+
+SELECT e.ename, d.dname, COUNT(o.ordid) AS 'No of Orders',
+              PRINTF("£%.2f", SUM(i.qty * i.actualprice)) AS 'Order Value'
+FROM dept d  
+              INNER JOIN  emp e ON d.deptno = e.deptno
+              INNER JOIN  customer c ON e.empno = c.repid
+              INNER JOIN  ord o ON c.custid   = o.custid
+              INNER JOIN  item i ON o.ordid   = i.ordid
+WHERE orderdate > '2005-02-01'
+GROUP BY e.ename, d.dname
+HAVING COUNT(o.ordid) >=3 AND SUM(i.qty * i.actualprice) >= 1000;
+
+--Question 11:
+
+SELECT e.ename, hiredate, p.descrip, COUNT(o.ordid) AS 'No of Orders',
+               PRINTF("£%.2f", SUM(i.qty * i.actualprice)) AS 'Order Value'
+FROM emp e
+            INNER JOIN  customer c ON e.empno = c.repid
+            INNER JOIN  ord o ON c.custid   = o.custid
+            INNER JOIN  item i ON o.ordid   = i.ordid
+            INNER JOIN product p ON p.prodid = i.prodid
+GROUP BY e.ename, p.prodid
+HAVING COUNT(o.ordid) >= 3;
+
+--question 11b:
+SELECT e.ename, hiredate, p.descrip, o.ordid, i.qty * i.actualprice AS 'Order Value'
+FROM emp e
+            INNER JOIN customer c ON e.empno = c.repid
+            INNER JOIN ord o ON c.custid = o.custid
+            INNER JOIN item i ON o.ordid = i.ordid
+            INNER JOIN product p ON p.prodid = i.prodid
+WHERE e.ename = 'ALLEN'
+ORDER BY p.descrip;
+
+--Question 12:
+SELECT ROUND(AVG(monthly_sal)) AS 'Average monthly sal', 
+ROUND(MEDIAN(monthly_sal)) AS 'Median monthly sal', 
+MODE(monthly_sal) AS 'Mode monthly sal', 
+ROUND(STDEV(monthly_sal)) AS 'Monthly sal standard deviation', 
+ROUND(VARIANCE(monthly_sal)) AS 'Monthly sal variance', 
+LOWER_QUARTILE(monthly_sal) AS 'Monthly sal lower quartile', 
+UPPER_QUARTILE(monthly_sal) AS 'Monthly sal upper quartile'
+FROM emp;
+
+          
+
+

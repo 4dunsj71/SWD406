@@ -1,0 +1,111 @@
+--week 5 Practice Questions 17/02/2020:
+
+--Question 1a:
+SELECT ename, hiredate
+FROM emp
+ORDER BY hiredate DESC;
+
+--Question b:
+SELECT ename,hiredate
+FROM emp
+ORDER BY hiredate DESC
+LIMIT 1;
+
+--Question c:
+SELECT ename,hiredate
+FROM emp
+ORDER BY hiredate
+LIMIT 1 OFFSET 2;
+
+--Question d:
+SELECT ename,deptno
+FROM emp
+WHERE deptno = (SELECT deptno
+                FROM emp
+                ORDER BY hiredate
+                LIMIT 1);
+
+--Question 2:
+SELECT ename, monthly_sal,deptno
+FROM emp
+WHERE monthly_sal=(SELECT MIN(monthly_sal)
+                    FROM emp);
+--Question 3: 
+SELECT ename,job
+FROM emp
+WHERE job=(SELECT job
+            FROM emp
+            WHERE ename='TURNER')
+AND ename !='TURNER';
+
+--Question 4: 
+SELECT deptno,AVG(monthly_sal) AS 'Average Monthly Salary'
+FROM emp
+GROUP BY DEPTNO
+HAVING AVG(monthly_sal)>(SELECT AVG(monthly_sal)
+                         FROM emp
+                         WHERE deptno=20);     
+                         
+--Question 5:
+  SELECT DISTINCT ename
+  FROM emp e
+       INNER JOIN
+       customer cu ON cu.repid = e.empno
+ WHERE cu.repid NOT IN (
+           SELECT c.repid
+             FROM ord o
+                  INNER JOIN
+                  customer c ON c.custid = o.custid
+                  INNER JOIN
+                  item i ON o.ordid = i.ordid
+            WHERE i.prodid = 200380
+       );
+
+--Question 6:
+SELECT ename,monthly_sal,deptno
+FROM emp
+WHERE(monthly_sal,deptno) IN (SELECT MIN(monthly_sal), deptno
+                              FROM emp
+                              GROUP BY deptno)
+ORDER BY deptno;
+
+--Question 7:
+SELECT job,
+       ename,
+       empno,
+       deptno
+  FROM emp e1
+ WHERE EXISTS (
+           SELECT *
+             FROM emp e2
+            WHERE e2.mgr = e1.empno
+       );
+       
+--question 8:
+SELECT empno,ename,monthly_sal,deptno
+FROM emp e1
+WHERE monthly_sal > (SELECT AVG(monthly_sal)
+                    FROM emp e2
+                    WHERE e2.deptno = e1.deptno);
+                    
+--Question 9
+SELECT ename AS 'Employee Name',
+    (    
+        SELECT COUNT(ename)
+        FROM emp e2
+        WHERE e2.mgr = e1.empno
+    )
+    direct_reports
+FROM emp e1
+WHERE direct_reports > 0
+ORDER BY ename;
+
+--Question 10
+SELECT MAX(remuneration) AS 'Highest dept salary bill'
+FROM  (SELECT deptno, SUM(monthly_sal *12) + IFNULL(commission,0) 
+                                   AS 'remuneration'
+             FROM emp
+             GROUP BY deptno);
+
+      
+                    

@@ -1,0 +1,59 @@
+--week 4 practice questions 10/02/2020
+
+--question 1:
+SELECT SUM(monthly_sal) AS 'Total of all monthly salaries',
+       AVG(monthly_sal) AS 'Average Monthly Salary'
+FROM emp;
+       
+--question 2:
+SELECT MIN(monthly_sal) AS 'Minimum monthly salary',
+       MAX(monthly_sal)AS'Maximum Monthly Salary',
+COUNT(*)AS'Number Of Employees'       
+FROM emp;
+
+--question 3:
+SELECT deptno, SUM(monthly_sal)AS'Total of all monthly salaries',
+              AVG(monthly_sal)AS'Average monthly salary'
+FROM emp
+GROUP BY deptno;     
+
+--Question 4:
+SELECT job, deptno,
+        SUM(monthly_sal)AS'Total of all monthly salaries',
+        AVG(monthly_sal)AS'Average monthly salary'
+FROM emp
+GROUP BY job,deptno;     
+
+--question 5:
+SELECT d.deptno,d.dname,
+        SUM(e.monthly_sal)AS'Total of all monthly salaries',
+        AVG(e.monthly_sal)AS'Average monthly salary'
+FROM emp e
+        INNER JOIN dept d ON e.deptno=d.deptno
+GROUP BY d.deptno;   
+
+--question 6:
+SELECT i.ordid,i.itemid,i,qty,di.qty, SUM(di.qty)AS'Total Delivered'
+FROM item i
+        INNER JOIN delivered_item di ON i.ordid = di.ordid
+                                    AND i.itemid=di.itemid
+WHERE i.qty > di.qty
+AND i.ordid < 615
+GROUP BY i.ordid, i.itemid, i.qty;     
+
+--question 7:
+SELECT job,deptno,COUNT(empno)AS'NO. of Employees',
+        SUM(monthly_sal)AS'Total of all monthly salaries',
+        AVG(monthly_SAL)AS'Average Monthly Salary'
+FROM emp
+GROUP BY job,deptno
+HAVING COUNT(empno)>1;
+
+--question 8:
+SELECT job, AVG(monthly_sal) AS 'Average monthly salary', 
+SUM(monthly_sal) AS 'Total of all monthly salaries', 
+COUNT(empno) AS 'No. of employees'
+FROM emp
+WHERE deptno != 20
+GROUP BY job
+HAVING COUNT(empno) > 2;

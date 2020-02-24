@@ -1,0 +1,90 @@
+
+/*Question 1: Display all columns from the emp table  */
+SELECT *
+FROM emp;
+
+
+/*Question 2: Display the same details as question 1 but in employee name order */
+SELECT *
+FROM emp
+ORDER BY ENAME;
+
+/*Question 3: Display all columns for employees who are salesmen*/
+SELECT *
+FROM emp
+WHERE job='SALESMAN';
+
+/*Question 4: Display the same details fo those wit monthly salaries greater than 2500*/
+SELECT *
+FROM emp
+where monthly_sal>2500;
+
+/*Question 5: Display ename, job, hiredate and deptno for employees hred on or after 1/1/1982*/
+SELECT ename,job,hiredate,deptno
+FROM emp
+where hiredate>'1982-1-1';
+
+--Question 6: Display the ename, job, commission; and deptno for employees with commission earnings
+SELECT ename,job,commission,deptno
+FROM emp
+WHERE commission IS NOT NULL;
+
+/*Question 7: Display the ename, job, mgr, hiredate and commission for emplyees who either have no manager,
+ or are managed by employee number 7782*/
+SELECT ename,job,mgr,hiredate
+FROM emp
+WHERE mgr=7782||mgr IS NULL;
+
+/* Question 8: display ename, job, mgr, hiredate and commission for employees managed by employee 7566 or are earning commission.
+add a further commission to only display employees hired on or after 8-9-1981*/
+SELECT ename,job,mgr,hiredate,commission
+FROM emp
+WHERE mgr=7566 OR commission IS NOT NULL;
+
+--Question 9: display name, annual salary, and commission for employees in department 30
+SELECT ename,monthly_sal*12,commission
+FROM emp
+WHERE deptno=30;
+/*Question 10: display name and total annual salary and commission for all employees
+ in department 30. the headings for the second column should be annual earnings*/
+ SELECT ename, monthly_sal*12+IFNULL(commission,0) AS 'Annual salary'
+ FROM emp
+ WHERE deptno=30;
+ 
+/*Question 11: display employee number and employee name as one column seperated by a 
+space (with a column name of Employee) together with what the monthly salary would
+if it were increased by 20% for all the employees in department 30. the heading for
+the second column should be monthly earnings +20% */
+
+SELECT empno||' '||ename AS 'EMPLOYEE', monthly_sal*1.2 AS 'MONTHLY SALARY +20%'
+FROM emp
+WHERE deptno =30;
+
+/*Question 12: Display the same details and column headings as for exercise 11 but for 
+employees in all departments whose names start with A or S. Sort the output by employee no
+and employee name */
+
+SELECT empno||' '||ename AS 'employee', monthly_sal*1.2 AS 'monthly salary +20%'
+FROM emp
+WHERE ename LIKE 'A%'
+OR ename LIKE 'S%'
+ORDER BY employee;
+
+/*Question 13: display the name and area of customers in either of the two areas entered
+ as parameters by the end user. Enter the two parameters(both as text) as HANT and OXON as shown below*/
+ 
+SELECT name,area
+FROM customer
+WHERE area = @AREA1
+OR area = @AREA2;
+
+/*Question 14: For all rows in the PRICE table where the enddate is not null, display the prodid, stdprice,
+ startdate, enddate and number of days between the startdate and enddate (using the JULIANDAY function).
+  Display the start and end dates in the format DD/MM/YYYY using the STRFTIME function.*/
+  
+SELECT prodid, stdprice, STRFTIME('%d/%m/%Y',startdate) AS 'STARTDATE', STRFTIME('%d/%m/%Y',enddate) AS 'ENDDATE', JULIANDAY(enddate) - JULIANDAY(startdate) AS 'Duration in days' 
+FROM price
+WHERE enddate is NOT NULL;
+
+
+

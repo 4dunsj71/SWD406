@@ -1,0 +1,59 @@
+-- week 2 exercises
+
+/*Question 1: display a listing of the names and credit limits of all customers
+ with the roder number and date of all orders they have placed since and
+ including 01/01/2005. Arrange the outputs by customer name and then order date.*/
+ 
+SELECT c.name, c.creditlimit, o.ordid, o.orderdate
+FROM customer c
+    INNER JOIN ord o ON C.custid = o.custid
+WHERE o.orderdate>'2005-01-01'
+ORDER BY c.name,o.orderdate;         
+
+/*Question 2: Display the details below for all customers together with the name of their sales rep
+ with a column heading of “Rep”.  Output should be in rep then customer name order.*/
+ 
+SELECT e.ename AS 'rep', c.name, c.area , c.creditlimit
+FROM emp e
+    INNER JOIN customer c ON e.empno = c.repid
+ORDER BY e.ename,c.name;
+
+ 
+/*Question 3: Display the following details for all products and their current price
+ (i.e. where there is no end date in the price table)*/
+ 
+SELECT pro.prodid AS 'description', startdate,stdprice AS 'Current Price', enddate
+FROM product pro
+    INNER JOIN price pri ON pro.PRODID = pri.PRODID
+WHERE enddate is NULL
+ORDER BY pro.prodid;
+
+/*Question 3b: Display the same details as question 3a but format the Current Price
+ with 2 decimal places prefixed with a £. Hint: Look up the SQLite printf() function. */
+ 
+SELECT pro.prodid AS 'description', startdate,printf("£%.2f",stdprice) AS 'Current Price', enddate
+FROM product pro
+    INNER JOIN price pri ON pro.PRODID = pri.PRODID
+WHERE enddate is NULL
+ORDER BY pro.prodid;
+
+--Question 4: display order number, item id, product id, and description for each item in order 612
+
+SELECT i.ordid, i.itemid, i.prodid, p.descrip
+FROM item i
+    INNER JOIN product p ON p.prodid = i.prodid
+WHERE i.ordid = 612
+ORDER BY i.itemid;
+
+--Question 5: display rep, name, orderid, orderdate for sales handled by rep ALLEN since and includng 01-01-2005
+
+SELECT e.ename as 'rep', c.name,o.ordid,o.orderdate
+
+FROM emp e 
+    INNER JOIN customer c ON e.empno = c.repid
+    INNER JOIN ord o ON c.custid = o.custid
+WHERE o.orderdate>='2005-01-01'
+AND e.ename='ALLEN';
+
+
+--Questin 6: join all the relevant tables together to get the following details for order number 612
