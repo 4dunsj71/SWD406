@@ -1,9 +1,24 @@
 #!/usr/bin/python
 import sqlite3
+from sqlite3 import Error
 
 
-conn = sqlite3.connect('orinoco.db')
-connection.cursor([sqlCursor])
+def create_connection(orinoco):
+    """ create a database connection """
+    conn = None
+    try:
+        conn = sqlite3.connect('orinoco.db')
+        print("connection succeeded")
+    except Error as e:
+        print(e)
+    finally:
+        if conn:
+            conn.close()
+if __name__=='__main__':
+    create_connection(r"orinoco.db")
+        
+
+
 shopperId = input("enter your shopper ID number: ")
 loopval = 0
 print ("\n")
