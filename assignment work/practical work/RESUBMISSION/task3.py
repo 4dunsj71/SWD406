@@ -11,6 +11,7 @@ def _display_options(all_options,title,type):
         print("{0}.\t{1}".format(option_num, desc))
         option_num = option_num + 1
         option_list.append(code)
+    global selected_option
     selected_option = 0
     while selected_option > len(option_list) or selected_option == 0:
         prompt = "Enter the number against the "+type+" you want to choose: "
@@ -40,6 +41,9 @@ cat_get =  'SELECT product_id, \
             FROM products \
             WHERE category_id = (?)'
 
+cat_try = 'SELECT category_id,\
+           category_description\
+            FROM categories'
 seller_get ="SELECT seller_id\
             ,price\
             FROM product_sellers\
@@ -84,45 +88,35 @@ while loopval == 0:
                 loopval = 1
 
 
+      
 
 
         elif menuInput == '2':
-        
-            while loopval2 == 0: 
-                    
-                basket_input = input('select an option: \n \
-                1. Mobile Phones and accessories \n \
-                2. TVs and Home Cinema \n \
-                3. Cameras and accessories \n \
-                4. Audio and Hifi \n \
-                5. Computers and accessories \n \
-                5. Gaming \n    ')
-
-                basket_val = 1
-                print('   ID               product description')
-                cursor.execute(cat_get,basket_input)
+            print('Add an item to your basket\n\n')
+            while loopval2 == 0:
+                cursor.execute(cat_try)
                 all_rows = cursor.fetchall()
-                for row in all_rows:
-                    product_id = row[0]
-                    product_description = row[1]
-                    print('{0:5}\t\t{1:15}'.format(product_id,product_description))
-                cursor.close()
+                _display_options(all_rows,'categories','number')
+                
+                selected_category = str(selected_option)
+                cursor.execute(cat_get,selected_category)
+                all_rows = cursor.fetchall()
+                _display_options(all_rows,'products','number')
+                
+                selected_product = str(all_rows[int(selected_option)])
+                # selected_product ^^^ does not work, check when your brain works
+                cursor.execute(seller_get,selected_product)
+                all_rows = cursor.fetchall()
+                _display_options(all_rows,'sellers who stock this product','number')
+                #for row in all_rows:
+                    #product_id = row[0]
+                    #product_description = row[1]
+                    #print('{0}\t{1}'.format(product_id,product_description))
+                
+                        
+                        
+                
 
-                product_input = input('enter the product ID of the item you wish to purchase: ')
-                print('seller ID\t\tprice')
-                cursor = db.cursor()
-                cursor.execute(seller_get,(product_input))
-                all_rows=cursor.fetchall()
-                for row in all_rows:
-                    seller_id = row[0]
-                    price = row[1]
-                    print('{0}\t\t{1.2f}'.format(seller_id,price))
-                cursor.close()
-            leavemenu = input("return to main menu? if you select no, the program will terminate(y/n)")
-            if leavemenu == 'y':
-                loopval2 = 0
-            elif leavemenu == 'n':
-                loopval2 = 1
             
 
         elif menuInput == '3':
