@@ -17,7 +17,24 @@ def _display_options(all_options,title,type):
         prompt = "Enter the number against the "+type+" you want to choose: "
         selected_option = int(input(prompt))
     return option_list[selected_option - 1]
-
+def _display_3_options(all_options,title,type):
+    option_num = 1
+    option_list = []
+    print("\n",title,"\n")
+    for option in all_options:
+        code = option[0]
+        desc = option[1]
+        desc2 = option[2]
+        desc3 = option[3]
+        print("{0}.\t{1}\t{2}\t{3}".format(option_num, desc, desc2, desc3))
+        option_num = option_num + 1
+        option_list.append(code)
+    global selected_option
+    selected_option = 0
+    while selected_option > len(option_list) or selected_option == 0:
+        prompt = "Enter the number against the "+type+" you want to choose: "
+        selected_option = int(input(prompt))
+    return option_list[selected_option - 1]
 db = sqlite3.connect('orinoco.db')
 order_get ="SELECT IFNULL(op.order_id,'empty'), \
             STRFTIME('%d-%m-%Y',so.order_date),\
@@ -44,11 +61,26 @@ cat_get =  'SELECT product_id, \
 cat_try = 'SELECT category_id,\
            category_description\
             FROM categories'
-seller_get ="SELECT seller_id\
-            ,price\
-            FROM product_sellers\
-            WHERE product_id = (?)"
 
+seller_get ="SELECT ps.product_id\
+            ,s.seller_name\
+            ,ps.price\
+            ,s.seller_id\
+            FROM product_sellers ps\
+                 INNER JOIN\
+            sellers s ON s.seller_id = ps.seller_id\
+            WHERE product_id = (?); "
+order_confirm ='SELECT ps.seller_id\
+                ,s.seller_name\
+                ,p.product_description\
+                ,ps.price\
+                FROM product_sellers ps\
+                    INNER JOIN\
+                sellers s ON s.seller_id = ps.seller_id\
+                    INNER JOIN\
+                products p ON p.product_id = ps.product_id\
+                WHERE ps.product_id = ?\
+                AND ps.seller_id = ?'
 loopval = 0
 loopval2 = 0
 
@@ -65,7 +97,6 @@ while loopval == 0:
             cursor = db.cursor()
             cursor.execute(order_get,(shopperId,))
             result = all_rows = cursor.fetchall()
-            data = cursor.fetchone()
             print('ORDER HISTORY \n _______________________________________________')
             print("     order ID   order date        product                 seller         price       quantity  order status\n")
             for row in all_rows:
@@ -102,16 +133,33 @@ while loopval == 0:
                 cursor.execute(cat_get,selected_category)
                 all_rows = cursor.fetchall()
                 _display_options(all_rows,'products','number')
+                first_element = []
+                for a_tuple in all_rows:
+                    first_element.append(a_tuple[0])
                 
-                selected_product = str(all_rows[int(selected_option)])
-                # selected_product ^^^ does not work, check when your brain works
-                cursor.execute(seller_get,selected_product)
+                selected_product = ((first_element[(selected_option-1)]))
+                sel_prod_id = str(selected_product)
+                cursor.execute(seller_get,[sel_prod_id])
                 all_rows = cursor.fetchall()
-                _display_options(all_rows,'sellers who stock this product','number')
-                #for row in all_rows:
-                    #product_id = row[0]
-                    #product_description = row[1]
-                    #print('{0}\t{1}'.format(product_id,product_description))
+                _display_3_options(all_rows,'sellers who sell this product','number')
+                first_element = []
+                for a_tuple in all_rows:
+                    first_element.append(a_tuple[3])
+                selected_seller = ((first_element[(selected_option-1)]))
+                sel_sell_id = str(selected_seller)
+                print(selected_seller)
+                cursor.execute(order_confirm,([sel_prod_id],[sel_sell_id]))
+                all_rows = cursor.fetchall()
+                for row in all_rows:
+                    seller_id = row[0]
+                    product_description = row[1]
+                    price[2]
+                    print("{0}\t{1}\t£{2.2f}".format(seller_id,product_description,price))
+                buy_shit = input("enter a quantity to buy: ")
+                if buy_shit.isdigit:
+                    print("ayyyy")
+                else:
+                    print("that was not a number, try again")
                 
                         
                         
