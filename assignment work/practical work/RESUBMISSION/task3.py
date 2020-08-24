@@ -81,6 +81,10 @@ order_confirm ='SELECT ps.seller_id\
                 products p ON p.product_id = ps.product_id\
                 WHERE ps.product_id = ?\
                 AND ps.seller_id = ?'
+basket_add = 'INSERT INTO shopper_basket(shopper_id,basket_number)\
+              VALUES(?,?);\
+              INSERT INTO {idfk the name of the table}(basket_number,shopper_id,product_id,quantity)\
+              VALUES(?,?,?);"
 loopval = 0
 loopval2 = 0
 
@@ -157,7 +161,9 @@ while loopval == 0:
                     print("{0}\t{1}\t£{2.2f}".format(seller_id,product_description,price))
                 buy_shit = input("enter a quantity to buy: ")
                 if buy_shit.isdigit:
-                    print("ayyyy")
+                    if (confirm = input("confirm action (y/n): ") = y):
+                        cursor.execute(basket_add,(shopper_id,sel_pod_id,basket_number,buy_shit))
+                    
                 else:
                     print("that was not a number, try again")
                 
