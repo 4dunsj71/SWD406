@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import sqlite3
-
+db = sqlite3.connect('orinoco.db')
 def _display_options(all_options,title,type):
     option_num = 1
     option_list = []
@@ -17,6 +17,9 @@ def _display_options(all_options,title,type):
         prompt = "Enter the number against the "+type+" you want to choose: "
         selected_option = int(input(prompt))
     return option_list[selected_option - 1]
+def _add_basket(shopper_id):
+    c = db.cursor()
+    c.execute("SELECT ")
 def _display_3_options(all_options,title,type):
     option_num = 1
     option_list = []
@@ -35,7 +38,7 @@ def _display_3_options(all_options,title,type):
         prompt = "Enter the number against the "+type+" you want to choose: "
         selected_option = int(input(prompt))
     return option_list[selected_option - 1]
-db = sqlite3.connect('orinoco.db')
+
 order_get ="SELECT IFNULL(op.order_id,'empty'), \
             STRFTIME('%d-%m-%Y',so.order_date),\
             p.product_description,\
@@ -81,10 +84,13 @@ order_confirm ='SELECT ps.seller_id\
                 products p ON p.product_id = ps.product_id\
                 WHERE ps.product_id = ?\
                 AND ps.seller_id = ?'
-basket_add = 'INSERT INTO shopper_basket(shopper_id,basket_number)\
-              VALUES(?,?);\
-              INSERT INTO {idfk the name of the table}(basket_number,shopper_id,product_id,quantity)\
-              VALUES(?,?,?);"
+basket_add = "INSERT INTO shopper_baskets (shopper_id,basket_created_date_time)\
+                VALUES(?,CURRENT_DATE);"
+purchase_product = "INSERT INTO basket_contents (basket_id,product_id,seller_id,quantity,price)\
+                    VALUES(?,?,?,?,?)"
+
+#add_to_basket = 'INSERT INTO basket_contents(basket_id,product_id,seller_id,quantity,price)\
+#                 VALUES(?,?,?)'
 loopval = 0
 loopval2 = 0
 
@@ -92,7 +98,12 @@ print ("\n")
 while loopval == 0:
     cursor = db.cursor()
     shopperId = input("enter your shopper ID number: ")
+    
     if shopperId.isdigit():
+        if cursor.execute(basket_add,(shopperId,)):
+             print('basket successfully created')
+
+
         print('ORINOCO - SHOPPER MAIN MENU\n _______________________________________________ \n 1.Display your order history \
              \n 2.add an item to your basket \
               \n 3.view your basket \n 4.checkout \n 5.exit')
@@ -162,11 +173,35 @@ while loopval == 0:
                     product_description =row[2]
                     price = row[3]
                     print("{0}\t{1}\t{2}\t{3}".format(seller_id,seller_name,product_description,price))
-                buy_shit = input("enter a quantity to buy: ")
-                if buy_shit.isdigit:
-                    if (confirm = input("confirm action (y/n): ") = y):
-                        cursor.execute(basket_add,(shopper_id,sel_pod_id,basket_number,buy_shit))
-                    
+                purchase_quantity = input("enter a quantity to buy: ")
+                
+                if purchase_quantity.isdigit:
+                    cursor.execute("SELECT basket_id FROM shopper_baskets WHERE shopper_id = ?",[shopperId])
+                    all_rows = cursor.fetchall()
+                    first_element = []
+                    for a_tuple in all_rows:
+                        first_element.append(a_tuple[0])
+                    basket_id_tuple = first_element[0]
+                    basket_id = str(basket_id_tuple)
+                    cursor.execute("SELECT price FROM product_sellers WHERE product_id = ? AND seller_id = ?",((sel_prod_id),(sel_sell_id)))
+                    all_rows = cursor.fetchall()
+                    first_element = []
+                    for a_tuple in all_rows:
+                        first_element.append(a_tuple[0])
+                    price_tuple = first_element[0]
+                    price = str(price_tuple)
+                    add_confirm = input("add item to basket? (y/n)")
+                    if add_confirm == 'y':
+                        if cursor.execute(purchase_product,((basket_id),(sel_prod_id),(sel_sell_id),purchase_quantity,(price))):
+                            db.commit()
+                            print("purchase successful!")
+                    elif add_confirm =='n':
+                        print("basket addition cancelled \n")        
+                    exit_buy = input("do you wish to return to the main menu? (y/n)")
+                    if exit_buy == 'y':
+                        loopval2 = 1
+
+
                 else:
                     print("that was not a number, try again")
                 
