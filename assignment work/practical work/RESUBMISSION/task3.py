@@ -147,14 +147,17 @@ while loopval == 0:
                     first_element.append(a_tuple[3])
                 selected_seller = ((first_element[(selected_option-1)]))
                 sel_sell_id = str(selected_seller)
-                print(selected_seller)
-                cursor.execute(order_confirm,([sel_prod_id],[sel_sell_id]))
+                print(type(sel_sell_id))
+                print(type(sel_prod_id))
+
+                cursor.execute(order_confirm,((sel_prod_id),(sel_sell_id)))
                 all_rows = cursor.fetchall()
                 for row in all_rows:
                     seller_id = row[0]
-                    product_description = row[1]
-                    price[2]
-                    print("{0}\t{1}\t£{2.2f}".format(seller_id,product_description,price))
+                    seller_name = row[1]
+                    product_description =row[2]
+                    price = row[3]
+                    print("{0}\t{1}\t{2}\t{3}".format(seller_id,seller_name,product_description,price))
                 buy_shit = input("enter a quantity to buy: ")
                 if buy_shit.isdigit:
                     print("ayyyy")
