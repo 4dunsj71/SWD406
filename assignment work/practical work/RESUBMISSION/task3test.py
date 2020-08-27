@@ -17,6 +17,13 @@ def _display_options(all_options,title,type):
         selected_option = int(input(prompt))
     return option_list[selected_option - 1]
 
+def _first_tuple_string(all_rows,str_out):
+    first_element = []
+    for a_tuple in all_rows:
+        first_element.append(a_tuple[0])
+    first_tuple = first_element[0]
+    global str_out
+    str_out = str(first_tuple)
 
 
 cat_try = 'SELECT category_id,\
@@ -27,4 +34,6 @@ cursor = db.cursor()
 cursor.execute(cat_try)
 
 all_rows = cursor.fetchall()
-_display_options(all_rows,'categories','category')
+str_out
+_first_tuple_string(all_rows,str_out)
+print(str_out)
